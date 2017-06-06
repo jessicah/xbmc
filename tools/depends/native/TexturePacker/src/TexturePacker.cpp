@@ -92,7 +92,11 @@ void CreateSkeletonHeaderImpl(CXBTFWriter& xbtfWriter, std::string fullPath, std
       std::string fileN = fullPath + "/" + dp->d_name;
       if (stat(fileN.c_str(), &stat_p) == 0)
       {
+      	#if defined(TARGET_HAIKU)
+      	if (stat_p.st_mode & S_IFDIR)
+      	#else
         if (dp->d_type == DT_DIR || stat_p.st_mode & S_IFDIR)
+        #endif
         {
           std::string tmpPath = relativePath;
           if (tmpPath.size() > 0)

@@ -1,0 +1,35 @@
+set(ARCH_DEFINES -D_LINUX -DTARGET_POSIX -DTARGET_HAIKU)
+set(SYSTEM_DEFINES -D__STDC_CONSTANT_MACROS -D_LARGEFILE64_SOURCE
+                   -D_FILE_OFFSET_BITS=64)
+set(PLATFORM_DIR linux)
+set(CMAKE_SYSTEM_NAME Haiku)
+if(WITH_ARCH)
+  set(ARCH ${WITH_ARCH})
+else()
+  if(CPU STREQUAL x86_64)
+    set(ARCH x86_64-haiku)
+    set(NEON False)
+  elseif(CPU MATCHES "i.86")
+    set(ARCH x86-haiku)
+    set(NEON False)
+    add_options(CXX ALL_BUILDS "-msse")
+  else()
+    message(SEND_ERROR "Unknown CPU: ${CPU}")
+  endif()
+endif()
+
+# Make sure we strip binaries in Release build
+if(CMAKE_BUILD_TYPE STREQUAL Release AND CMAKE_COMPILER_IS_GNUCXX)
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")
+endif()
+
+find_package(CXX11 REQUIRED)
+#include(LDGOLD)
+
+# Code Coverage
+if(CMAKE_BUILD_TYPE STREQUAL Coverage)
+  set(COVERAGE_TEST_BINARY ${APP_NAME_LC}-test)
+  set(COVERAGE_SOURCE_DIR ${CMAKE_SOURCE_DIR})
+  set(COVERAGE_DEPENDS "\${APP_NAME_LC}" "\${APP_NAME_LC}-test")
+  set(COVERAGE_EXCLUDES */test/* lib/* */lib/*)
+endif()

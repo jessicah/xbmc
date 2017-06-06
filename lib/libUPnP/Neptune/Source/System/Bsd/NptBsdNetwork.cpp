@@ -12,6 +12,9 @@
 +---------------------------------------------------------------------*/
 #include <sys/types.h>
 #include <sys/socket.h>
+#ifdef __HAIKU__
+#include <sys/sockio.h>
+#endif
 #include <sys/select.h>
 #include <sys/time.h>
 #include <sys/ioctl.h>

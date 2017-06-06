@@ -54,6 +54,9 @@
 #include <stdio.h>
 #include <sys/sysctl.h>
 #include <sys/types.h>
+#elif defined(TARGET_HAIKU)
+#include <stdio.h>
+#include <sys/types.h>
 #else
 #include <sys/sysinfo.h>
 #endif
@@ -158,14 +161,16 @@
 #define __int64   long long
 #define __uint64  unsigned long long
 
+#ifndef __HAIKU__
 #define __stdcall
 #define __cdecl
+#endif
 #define WINBASEAPI
 #define NTAPI       __stdcall
 #define CALLBACK    __stdcall
 #define WINAPI      __stdcall
 #define WINAPIV     __cdecl
-#if !defined(TARGET_DARWIN) && !defined(TARGET_FREEBSD)
+#if !defined(TARGET_DARWIN) && !defined(TARGET_FREEBSD) && !defined(TARGET_HAIKU)
 #define APIENTRY    WINAPI
 #else
 #define APIENTRY
@@ -175,7 +180,9 @@
 #define OUT
 #define OPTIONAL
 #define _declspec(X)
+#ifndef __HAIKU__
 #define __declspec(X)
+#endif
 
 struct CXHandle; // forward declaration
 typedef CXHandle* HANDLE;
@@ -330,7 +337,7 @@ typedef int (*LPTHREAD_START_ROUTINE)(void *);
 #define _O_RDONLY O_RDONLY
 #define _O_WRONLY O_WRONLY
 
-#if defined(TARGET_DARWIN) || defined(TARGET_FREEBSD)
+#if defined(TARGET_DARWIN) || defined(TARGET_FREEBSD) || defined(TARGET_HAIKU)
   #define stat64 stat
   #define __stat64 stat
   #define fstat64 fstat
